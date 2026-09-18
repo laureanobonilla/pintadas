@@ -41,8 +41,25 @@
             color: #ff4584;
             text-align: center;
             max-width: 600px;
-            margin-bottom: 30px;
+            margin-bottom: 12px;
             font-size: 1.1rem;
+        }
+
+        .support {
+            color: #9da7b3;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            font-size: 0.95rem;
+        }
+
+        .support a {
+            color: #45f3ff;
+            text-decoration: none;
+        }
+
+        .support a:hover {
+            text-decoration: underline;
         }
 
         /* Sección de Pago / Desbloqueo */
@@ -173,9 +190,10 @@
 
     <h1>Chicas quieren pintura</h1>
     <!-- NUEVA FRASE AGREGADA -->
-    <p class="subtitle">¡A todas las llevamos a pintarse!</p>
+    <p class="subtitle">Cada semana agregamos fotos, siempre hay más chicas que quieren ser pintadas.</p>
     
     <p class="intro">Explora nuestra colección exclusiva. Consigue acceso total permanente para revelar la segunda columna.</p>
+    <p class="support">¿Tienes algún problema con tu acceso o con el pago? Escríbenos a <a href="mailto:bonillapretiz@gmail.com">bonillapretiz@gmail.com</a>.</p>
 
     <div class="premium-panel">
         <div id="payment-zone">
@@ -183,7 +201,7 @@
             <p>Paga de forma segura con PayPal para desbloquear todo el contenido al instante.</p>
             
             <!-- REEMPLAZA CON TU ENLACE PROPIO DE PAYPAL -->
-            <a href="https://paypal.me" target="_blank" class="paypal-btn">Pagar con PayPal</a>
+            <a href="https://www.paypal.com/ncp/payment/B7TLK2XNMZRXJ" target="_blank" rel="noopener noreferrer" class="paypal-btn">Pagar con PayPal</a>
             
             <div class="unlock-form">
                 <p style="font-size: 0.9rem; margin-top: 0;">¿Ya tienes una contraseña manual?</p>
@@ -213,12 +231,18 @@
         const SECRET_PASSWORD = "PinturaPremium2026";
         const tabla = document.getElementById('tabla-chicas');
 
-        // Función para revisar si viene el parámetro automático de PayPal en la URL (?pago=exitoso)
+        // PayPal debe devolver al usuario a:
+        // https://pintadas.netlify.app/?pago=exitoso
+        // Al detectarlo, guardamos el acceso en este navegador/dispositivo.
+        // localStorage permanece aunque el usuario cierre o recargue la página.
         function verificarRetornoPaypal() {
             const parametros = new URLSearchParams(window.location.search);
+
             if (parametros.get('pago') === 'exitoso') {
                 localStorage.setItem('contentUnlocked', 'true');
-                // Limpia la barra de direcciones quitando el "?pago=exitoso" para que se vea limpio
+
+                // Quitamos el parámetro de la URL después de registrarlo.
+                // El acceso queda guardado en localStorage.
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
         }
