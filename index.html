@@ -169,7 +169,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: filter 0.5s ease;
+            transition: filter 0.5s ease, transform 0.2s ease;
+            cursor: zoom-in;
         }
 
         /* Clase para el efecto borroso */
@@ -184,6 +185,78 @@
             display: none;
             font-size: 1.2rem;
         }
+
+        /* Visor de imágenes ampliadas */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.94);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            touch-action: none;
+        }
+
+        .lightbox.open {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 96vw;
+            max-height: 92vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 6px;
+            cursor: zoom-out;
+            user-select: none;
+            -webkit-user-drag: none;
+            transform-origin: center center;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            width: 44px;
+            height: 44px;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+            font-size: 30px;
+            line-height: 44px;
+            cursor: pointer;
+        }
+
+        .lightbox-hint {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255,255,255,0.75);
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        body.lightbox-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            h1 { font-size: 2rem; }
+            .subtitle { font-size: 1.05rem; }
+            .content-table th, .content-table td { padding: 8px 4px; }
+            .img-container { width: 105px; height: 145px; }
+            .content-table td.name { font-size: 1rem; }
+            .lightbox { padding: 8px; }
+            .lightbox img { max-width: 100vw; max-height: 88vh; }
+        }
     </style>
 </head>
 <body>
@@ -191,6 +264,7 @@
     <h1>Chicas quieren pintura</h1>
     <!-- NUEVA FRASE AGREGADA -->
     <p class="subtitle">Cada semana agregamos fotos, siempre hay más chicas que quieren ser pintadas.</p>
+    <p class="subtitle" style="font-size:1.05rem; margin-bottom:10px;">Cada semana se agrega una nueva chica a la colección.</p>
     
     <p class="intro">Explora nuestra colección exclusiva. Consigue acceso total permanente para revelar la segunda columna.</p>
     <p class="support">¿Tienes algún problema con tu acceso o con el pago? Escríbenos a <a href="mailto:bonillapretiz@gmail.com">bonillapretiz@gmail.com</a>.</p>
@@ -212,6 +286,12 @@
         <div id="unlocked-zone" class="unlocked-msg">
             ¡Acceso Premium Activado en este dispositivo! 🎉
         </div>
+    </div>
+
+    <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+        <button class="lightbox-close" type="button" aria-label="Cerrar">&times;</button>
+        <img id="lightbox-image" src="" alt="Imagen ampliada">
+        <div class="lightbox-hint">Toca fuera para cerrar · Pellizca para ampliar</div>
     </div>
 
     <table class="content-table">
@@ -256,18 +336,18 @@
                 .then(response => response.json())
                 .then(carpetasChicas => {
                     
-                    carpetasChicas.forEach(nombre => {
+                    carpetasChicas.forEach((nombre, index) => {
                         const fila = document.createElement('tr');
                         fila.innerHTML = `
                             <td class="name">${nombre}</td>
                             <td>
                                 <div class="img-container">
-                                    <img src="images/${nombre}/1.jpg" alt="${nombre}">
+                                    <img src="images/${nombre}/1.jpg" alt="${nombre}" data-lightbox="true">
                                 </div>
                             </td>
                             <td>
                                 <div class="img-container">
-                                    <img src="images/${nombre}/2.jpg" alt="Oculta" class="blurred-target blurred">
+                                    <img src="images/${nombre}/2.jpg" alt="${nombre}" class="blurred-target ${index < 3 ? "" : "blurred"}" data-lightbox="true">
                                 </div>
                             </td>
                         `;
@@ -291,6 +371,79 @@
                 alert('Contraseña incorrecta.');
             }
         }
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        let lightboxScale = 1;
+        let pinchStartDistance = null;
+        let pinchStartScale = 1;
+
+        function openLightbox(img) {
+            if (!img || img.classList.contains('blurred')) return;
+            lightboxImage.src = img.currentSrc || img.src;
+            lightboxImage.alt = img.alt || 'Imagen ampliada';
+            lightboxScale = 1;
+            lightboxImage.style.transform = 'scale(1)';
+            lightbox.classList.add('open');
+            document.body.classList.add('lightbox-open');
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('open');
+            document.body.classList.remove('lightbox-open');
+            lightboxImage.src = '';
+            pinchStartDistance = null;
+        }
+
+        function applyLightboxScale(scale) {
+            lightboxScale = Math.min(4, Math.max(1, scale));
+            lightboxImage.style.transform = `scale(${lightboxScale})`;
+        }
+
+        // Las imágenes se crean dinámicamente después de cargar la página.
+        // Usamos delegación de eventos para que el tap/clic funcione siempre,
+        // tanto en computadora como en teléfonos.
+        tabla.addEventListener('click', function(event) {
+            const img = event.target.closest('img[data-lightbox="true"]');
+            if (!img) return;
+            event.preventDefault();
+            event.stopPropagation();
+            openLightbox(img);
+        });
+
+        document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', event => {
+            if (event.target === lightbox) closeLightbox();
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+        });
+
+        // Zoom con pellizco en teléfonos/tabletas.
+        lightboxImage.addEventListener('touchstart', event => {
+            if (event.touches.length === 2) {
+                pinchStartDistance = Math.hypot(
+                    event.touches[0].clientX - event.touches[1].clientX,
+                    event.touches[0].clientY - event.touches[1].clientY
+                );
+                pinchStartScale = lightboxScale;
+            }
+        }, { passive: true });
+
+        lightboxImage.addEventListener('touchmove', event => {
+            if (event.touches.length === 2 && pinchStartDistance) {
+                event.preventDefault();
+                const distance = Math.hypot(
+                    event.touches[0].clientX - event.touches[1].clientX,
+                    event.touches[0].clientY - event.touches[1].clientY
+                );
+                applyLightboxScale(pinchStartScale * (distance / pinchStartDistance));
+            }
+        }, { passive: false });
+
+        lightboxImage.addEventListener('touchend', event => {
+            if (event.touches.length < 2) pinchStartDistance = null;
+        }, { passive: true });
 
         function applyUnlock() {
             document.querySelectorAll('.blurred-target').forEach(img => {
