@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chicas quieren pintura</title>
+    <style>
+        /* Estilos Base - Estilo Oscuro / Premium */
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-shadow: 0 0 12px #ff4584;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        p.intro {
+            color: #ff4584;
+            text-align: center;
+            max-width: 600px;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        /* Sección de Pago / Desbloqueo */
+        .premium-panel {
+            background-color: #1f2833;
+            border: 1px solid #ff4584;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 40px;
+            box-sizing: border-box;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 69, 132, 0.2);
+        }
+
+        .paypal-btn {
+            display: inline-block;
+            background-color: #ffc439;
+            color: #003087;
+            padding: 12px 24px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .paypal-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .unlock-form {
+            margin-top: 15px;
+        }
+
+        .unlock-form input[type="text"] {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            width: 60%;
+            max-width: 250px;
+            background-color: #0b0c10;
+            color: #fff;
+            border: 1px solid #45f3ff;
+            text-align: center;
+        }
+
+        .unlock-form button {
+            background-color: #ff4584;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .unlock-form button:hover {
+            background-color: #ff1260;
+        }
+
+        /* Tabla de Contenido */
+        .content-table {
+            width: 100%;
+            max-width: 900px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #15161d;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .content-table th, .content-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #1f2833;
+        }
+
+        .content-table th {
+            background-color: #1f2833;
+            color: #ff4584;
+            font-size: 1.1rem;
+        }
+
+        .content-table td.name {
+            font-weight: bold;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .img-container {
+            width: 150px;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 6px;
+            margin: 0 auto;
+            background-color: #222;
+        }
+
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter 0.5s ease;
+        }
+
+        /* Clase para el efecto borroso */
+        .blurred {
+            filter: blur(18px);
+            pointer-events: none;
+        }
+        
+        .unlocked-msg {
+            color: #2ecc71;
+            font-weight: bold;
+            display: none;
+            font-size: 1.2rem;
+        }
+        
+        .error-msg {
+            color: #ff4d4d;
+            text-align: center;
+            margin: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Chicas quieren pintura</h1>
+    <p class="intro">Explora nuestra colección exclusiva. Consigue acceso total permanente para revelar la segunda columna.</p>
+
+    <div class="premium-panel">
+        <div id="payment-zone">
+            <h3>¿Quieres ver las fotos ocultas?</h3>
+            <p>Paga con PayPal y envía tu comprobante o nombre completo por correo para recibir tu clave de acceso único.</p>
+            
+            <a href="https://paypal.me" target="_blank" class="paypal-btn">Pagar con PayPal</a>
+            
+            <div class="unlock-form">
+                <input type="text" id="password-input" placeholder="Introduce tu contraseña">
+                <button onclick="checkPassword()">Desbloquear</button>
+            </div>
+        </div>
+        <div id="unlocked-zone" class="unlocked-msg">
+            ¡Acceso Premium Activado en este dispositivo! 🎉
+        </div>
+    </div>
+
+    <div id="error-container"></div>
+
+    <table class="content-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Foto 1 (Visible)</th>
+                <th>Foto 2 (Oculta)</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-chicas">
+            <!-- Las filas se generarán dinámicamente aquí -->
+        </tbody>
+    </table>
+
+	<script>
+		const SECRET_PASSWORD = "PinturaPremium2026";
+		const tabla = document.getElementById('tabla-chicas');
+
+		// Aquí llamamos a la función inteligente de Netlify que lee las carpetas reales
+		window.onload = function() {
+			fetch('/.netlify/functions/get-chicas')
+				.then(response => response.json())
+				.then(carpetasChicas => {
+					
+					// Iteramos automáticamente sobre los nombres reales de los folders detectados
+					carpetasChicas.forEach(nombre => {
+						const fila = document.createElement('tr');
+						fila.innerHTML = `
+							<td class="name">${nombre}</td>
+							<td>
+								<div class="img-container">
+									<img src="images/${nombre}/1.jpg" alt="${nombre}">
+								</div>
+							</td>
+							<td>
+								<div class="img-container">
+									<img src="images/${nombre}/2.jpg" alt="Oculta" class="blurred-target blurred">
+								</div>
+							</td>
+						`;
+						tabla.appendChild(fila);
+					});
+
+					// Si ya estaba desbloqueado en el dispositivo, quitamos el blur
+					if (localStorage.getItem('contentUnlocked') === 'true') {
+						applyUnlock();
+					}
+				})
+				.catch(err => console.error("Error al detectar carpetas:", err));
+		};
+
+		function checkPassword() {
+			const userInput = document.getElementById('password-input').value;
+			if (userInput.trim() === SECRET_PASSWORD) {
+				localStorage.setItem('contentUnlocked', 'true');
+				applyUnlock();
+			} else {
+				alert('Contraseña incorrecta.');
+			}
+		}
+
+		function applyUnlock() {
+			document.querySelectorAll('.blurred-target').forEach(img => {
+				img.classList.remove('blurred');
+				img.style.pointerEvents = 'auto';
+			});
+			document.getElementById('payment-zone').style.display = 'none';
+			document.getElementById('unlocked-zone').style.display = 'block';
+		}
+	</script>
+
+</body>
+</html>
