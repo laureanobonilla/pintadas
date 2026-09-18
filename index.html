@@ -11,26 +11,55 @@
             color: #c5c6c7;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            box-sizing: border-box;
         }
 
         h1 {
             color: #ffffff;
             text-shadow: 0 0 12px #ff4584;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2.2rem;
+            margin-bottom: 5px;
             text-align: center;
+        }
+
+        .subtitle {
+            color: #45f3ff;
+            font-style: italic;
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(69, 243, 255, 0.4);
         }
 
         p.intro {
             color: #ff4584;
             text-align: center;
             max-width: 600px;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            padding: 0 10px;
+        }
+
+        /* Banner Estratégico */
+        .aviso-semanal {
+            background: linear-gradient(45deg, #ff4584, #45f3ff);
+            color: #0b0c10;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            box-shadow: 0 0 15px rgba(69, 243, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            max-width: 90%;
         }
 
         /* Sección de Pago / Desbloqueo */
@@ -41,7 +70,7 @@
             padding: 20px;
             width: 100%;
             max-width: 600px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             box-sizing: border-box;
             text-align: center;
             box-shadow: 0 4px 15px rgba(255, 69, 132, 0.2);
@@ -65,18 +94,22 @@
 
         .unlock-form {
             margin-top: 15px;
+            border-top: 1px dashed #334455;
+            padding-top: 15px;
         }
 
         .unlock-form input[type="text"] {
             padding: 10px;
             border: none;
             border-radius: 4px;
-            width: 60%;
-            max-width: 250px;
+            width: 100%;
+            max-width: 240px;
             background-color: #0b0c10;
             color: #fff;
             border: 1px solid #45f3ff;
             text-align: center;
+            box-sizing: border-box;
+            margin-bottom: 10px;
         }
 
         .unlock-form button {
@@ -94,56 +127,89 @@
             background-color: #ff1260;
         }
 
-        /* Tabla de Contenido */
+        /* TABLA COMPLETAMENTE RESPONSIVA */
         .content-table {
             width: 100%;
-            max-width: 900px;
-            border-collapse: collapse;
-            margin-top: 20px;
+            max-width: 700px; /* Reducido un poco para ajustar pantallas medianas */
             background-color: #15161d;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
         }
 
-        .content-table th, .content-table td {
-            padding: 15px;
+        /* Encabezado */
+        .table-header {
+            background-color: #1f2833;
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 2px solid #ff4584;
+        }
+
+        .header-item {
+            color: #ff4584;
+            font-size: 1rem;
+            font-weight: bold;
             text-align: center;
+        }
+
+        /* Filas de Contenido */
+        .table-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
             border-bottom: 1px solid #1f2833;
         }
 
-        .content-table th {
-            background-color: #1f2833;
-            color: #ff4584;
-            font-size: 1.1rem;
-        }
-
-        .content-table td.name {
+        /* Distribución elástica fluida */
+        .col-name {
+            width: 30%;
+            padding-left: 15px;
             font-weight: bold;
-            color: #fff;
-            font-size: 1.2rem;
+            color: #ffffff;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            word-break: break-word; /* Evita que nombres largos rompan el diseño */
         }
 
+        .col-img {
+            width: 35%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        /* Contenedores Adaptables basados en Aspect Ratio */
         .img-container {
-            width: 150px;
-            height: 200px;
+            width: 85%; /* Se adapta al ancho de su columna */
+            max-width: 130px; /* Tamaño máximo en pantallas grandes */
+            aspect-ratio: 3 / 4; /* Mantiene la proporción vertical exacta siempre */
             overflow: hidden;
             border-radius: 6px;
-            margin: 0 auto;
             background-color: #222;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
         .img-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: filter 0.5s ease;
+            transition: filter 0.5s ease, transform 0.3s;
         }
 
-        /* Clase para el efecto borroso */
+        .img-container:hover img:not(.blurred) {
+            transform: scale(1.04);
+        }
+
+        /* Filtro Desenfoque */
         .blurred {
-            filter: blur(18px);
+            filter: blur(20px);
             pointer-events: none;
+            cursor: default;
         }
         
         .unlocked-msg {
@@ -152,28 +218,69 @@
             display: none;
             font-size: 1.2rem;
         }
-        
-        .error-msg {
-            color: #ff4d4d;
-            text-align: center;
-            margin: 10px;
+
+        /* MODAL RESPONSIVO */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 40px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(11, 12, 16, 0.96);
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: auto;
+            max-width: 90%;
+            max-height: 82vh;
+            border-radius: 6px;
+            box-shadow: 0 0 25px rgba(255, 69, 132, 0.4);
+            object-fit: contain;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: #ffffff;
+            font-size: 35px;
             font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Ajustes específicos para pantallas muy pequeñas (Móviles) */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.8rem; }
+            .col-name { font-size: 0.95rem; padding-left: 10px; }
+            .img-container { width: 90%; }
+            .unlock-form input[type="text"] { width: 100%; }
         }
     </style>
 </head>
 <body>
 
     <h1>Chicas quieren pintura</h1>
+    <p class="subtitle">¡A todas las llevamos a pintarse!</p>
+    
     <p class="intro">Explora nuestra colección exclusiva. Consigue acceso total permanente para revelar la segunda columna.</p>
+
+    <div class="aviso-semanal">🔥 Cada semana una nueva chica quiere pintarse 🔥</div>
 
     <div class="premium-panel">
         <div id="payment-zone">
             <h3>¿Quieres ver las fotos ocultas?</h3>
-            <p>Paga con PayPal y envía tu comprobante o nombre completo por correo para recibir tu clave de acceso único.</p>
+            <p>Paga de forma segura con PayPal para desbloquear todo el contenido al instante.</p>
             
             <a href="https://paypal.me" target="_blank" class="paypal-btn">Pagar con PayPal</a>
             
             <div class="unlock-form">
+                <p style="font-size: 0.9rem; margin-top: 0;">¿Ya tienes una contraseña manual?</p>
                 <input type="text" id="password-input" placeholder="Introduce tu contraseña">
                 <button onclick="checkPassword()">Desbloquear</button>
             </div>
@@ -183,77 +290,43 @@
         </div>
     </div>
 
-    <div id="error-container"></div>
+    <!-- TABLA RESPONSIVA AJUSTADA -->
+    <div class="content-table">
+        <div class="table-header">
+            <div class="header-item col-name">Nombre</div>
+            <div class="header-item col-img"></div>
+            <div class="header-item col-img"></div>
+        </div>
+        <div id="tabla-chicas">
+            <!-- Dinámico -->
+        </div>
+    </div>
 
-    <table class="content-table">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Foto 1 (Visible)</th>
-                <th>Foto 2 (Oculta)</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-chicas">
-            <!-- Las filas se generarán dinámicamente aquí -->
-        </tbody>
-    </table>
+    <!-- MODAL -->
+    <div id="myModal" class="modal" onclick="closeImage()">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="imgModal">
+    </div>
 
-	<script>
-		const SECRET_PASSWORD = "PinturaPremium2026";
-		const tabla = document.getElementById('tabla-chicas');
+    <script>
+        const SECRET_PASSWORD = "PinturaPremium2026";
+        const tabla = document.getElementById('tabla-chicas');
+        const modal = document.getElementById('myModal');
+        const modalImg = document.getElementById('imgModal');
 
-		// Aquí llamamos a la función inteligente de Netlify que lee las carpetas reales
-		window.onload = function() {
-			fetch('/.netlify/functions/get-chicas')
-				.then(response => response.json())
-				.then(carpetasChicas => {
-					
-					// Iteramos automáticamente sobre los nombres reales de los folders detectados
-					carpetasChicas.forEach(nombre => {
-						const fila = document.createElement('tr');
-						fila.innerHTML = `
-							<td class="name">${nombre}</td>
-							<td>
-								<div class="img-container">
-									<img src="images/${nombre}/1.jpg" alt="${nombre}">
-								</div>
-							</td>
-							<td>
-								<div class="img-container">
-									<img src="images/${nombre}/2.jpg" alt="Oculta" class="blurred-target blurred">
-								</div>
-							</td>
-						`;
-						tabla.appendChild(fila);
-					});
+        function zoomImage(element) {
+            const img = element.querySelector('img');
+            if (img.classList.contains('blurred')) return;
+            
+            modal.style.display = "block";
+            modalImg.src = img.src;
+        }
 
-					// Si ya estaba desbloqueado en el dispositivo, quitamos el blur
-					if (localStorage.getItem('contentUnlocked') === 'true') {
-						applyUnlock();
-					}
-				})
-				.catch(err => console.error("Error al detectar carpetas:", err));
-		};
+        // Corrección para cerrar adecuadamente el modal en móviles al tocar fuera
+        function closeImage() {
+            modal.style.display = "none";
+        }
 
-		function checkPassword() {
-			const userInput = document.getElementById('password-input').value;
-			if (userInput.trim() === SECRET_PASSWORD) {
-				localStorage.setItem('contentUnlocked', 'true');
-				applyUnlock();
-			} else {
-				alert('Contraseña incorrecta.');
-			}
-		}
-
-		function applyUnlock() {
-			document.querySelectorAll('.blurred-target').forEach(img => {
-				img.classList.remove('blurred');
-				img.style.pointerEvents = 'auto';
-			});
-			document.getElementById('payment-zone').style.display = 'none';
-			document.getElementById('unlocked-zone').style.display = 'block';
-		}
-	</script>
-
-</body>
-</html>
+        function verificarRetornoPaypal() {
+            const parametros = new URLSearchParams(window.location.search);
+if (parametros.get('pago') === 'exitoso') {localStorage.setItem('contentUnlocked', 'true');window.history.replaceState({}, document.title, window.location.pathname);}}window.onload = function() {verificarRetornoPaypal();fetch('/.netlify/functions/get-chicas').then(response => response.json()).then(carpetasChicas => {carpetasChicas.forEach(nombre => {const fila = document.createElement('div');fila.className = 'table-row';fila.innerHTML = <div class="col-name">${nombre}</div> <div class="col-img"> <div class="img-container" onclick="zoomImage(this)"> <img src="images/${nombre}/1.jpg" alt="${nombre}"> </div> </div> <div class="col-img"> <div class="img-container" onclick="zoomImage(this)"> <img src="images/${nombre}/2.jpg" alt="Oculta" class="blurred-target blurred"> </div> </div>;tabla.appendChild(fila);});if (localStorage.getItem('contentUnlocked') === 'true') {applyUnlock();}}).catch(err => console.error("Error al cargar carpetas:", err));};function checkPassword() {const userInput = document.getElementById('password-input').value;if (userInput.trim() === SECRET_PASSWORD) {localStorage.setItem('contentUnlocked', 'true');applyUnlock();} else {alert('Contraseña incorrecta.');}}function applyUnlock() {document.querySelectorAll('.blurred-target').forEach(img => {img.classList.remove('blurred');img.parentElement.style.cursor = 'pointer';});document.getElementById('payment-zone').style.display = 'none';document.getElementById('unlocked-zone').style.display = 'block';}
